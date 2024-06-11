@@ -1,0 +1,63 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+	--foreground-rgb: 0, 0, 0;
+	--background-start-rgb: 214, 219, 220;
+	--background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--foreground-rgb: 255, 255, 255;
+		--background-start-rgb: 0, 0, 0;
+		--background-end-rgb: 0, 0, 0;
+	}
+}
+
+body {
+	margin: 0;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+		"Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+		sans-serif;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+@layer utilities {
+	.text-balance {
+		text-wrap: balance;
+	}
+}
+
+.glow {
+	color: #fff;
+	text-align: center;
+	animation: glow 1s ease-in-out infinite alternate;
+}
+
+@font-face {
+	font-family: "Marcellus SC";
+	src: url("https://fonts.gstatic.com/s/marcellussc/v13/ke8iOgUHP1dg-Rmi6RWjbLE_htac.woff2")
+		format("woff2");
+}
+
+@-webkit-keyframes glow {
+	from {
+		text-shadow: 0 0 10px #ddd, 0 0 20px #ddd, 0 0 30px #e66800,
+			0 0 40px #e66800, 0 0 50px #e66800, 0 0 60px #e66800, 0 0 70px #e66800;
+	}
+
+	to {
+		text-shadow: 0 0 20px #ddd, 0 0 30px #ffb84d, 0 0 40px #ffb84d,
+			0 0 50px #ffb84d, 0 0 60px #ffb84d, 0 0 70px #ffb84d, 0 0 80px #ffb84d;
+	}
+}
+
+.MS_font {
+	font-family: "Marcellus SC", serif;
+	color: rgba(240, 240, 240, 1);
+	font-weight: bold;
+	font-size: 50px;
+}
