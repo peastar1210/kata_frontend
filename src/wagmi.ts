@@ -11,14 +11,14 @@ import {
 const ganache = {
 	id: 1337,
 	name: "Ganache",
-	iconUrl: "https://s2.coinmarketcap.com/static/img/coins/64x64/5805.png",
+	iconUrl: "icons/ganache.png",
 	iconBackground: "#fff",
 	nativeCurrency: { name: "Ganache", symbol: "ETH", decimals: 18 },
 	rpcUrls: {
-		default: { http: ["http://localhost:7545"] },
+		default: { http: ["http://localhost:8545"] },
 	},
 	blockExplorers: {
-		default: { name: "GanacheScan", url: "http://localhost:7545" },
+		default: { name: "GanacheScan", url: "http://localhost:8545" },
 	},
 } as const satisfies Chain;
 
