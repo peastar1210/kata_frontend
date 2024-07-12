@@ -59,29 +59,19 @@ const StakeContainer = () => {
 		StakingContractData("isStopped")
 	);
 
-	const stake = async () => {
+	const stake = () => {
 		if (!stakeAmount || selectedRate === null)
 			return console.log("stake failed", stakeAmount, selectedRate);
 		try {
-			await writeContract(
-				StakingContractData("approve", [
+			writeContract({
+				address: `0x${process.env.KATA_TOKEN_ADDRESS}`,
+				abi: KataTokenABI,
+				functionName: "approve",
+				args: [
 					`0x${process.env.STAKING_ADDRESS}`,
 					BigInt(stakeAmount * Math.pow(10, 18)),
-				])
-			);
-		} catch (err) {
-			console.log(err);
-		}
-	};
-
-	const changeStaking = async () => {
-		try {
-			console.log(
-				stakeAmount,
-				selectedRate,
-				`0x${process.env.STAKING_ADDRESS}`
-			);
-			writeContract(StakingContractData("changeStakingStatus", [false]));
+				],
+			});
 		} catch (err) {
 			console.log(err);
 		}
@@ -133,7 +123,7 @@ const StakeContainer = () => {
 										.map((item, index) => (
 											<option
 												key={index}
-												value={item.newInterestRate + "/" + item.lockDuration}>
+												value={index + "/" + item.lockDuration}>
 												{`Rate: ${item.newInterestRate}%, Lock: ${
 													Number(item.lockDuration) / 2592000
 												} month`}
