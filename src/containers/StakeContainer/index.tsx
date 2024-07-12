@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
 	Button,
 	Flex,
@@ -13,6 +13,7 @@ import {
 	Grid,
 	GridItem,
 	Select,
+	Badge,
 } from "@chakra-ui/react";
 import {
 	BaseError,
@@ -22,12 +23,21 @@ import {
 	useWatchContractEvent,
 } from "wagmi";
 
-import StakingABI from "@/constants/StakingABI.json";
-import KataTokenABI from "@/constants/KataTokenABI.json";
+import StakingABI from "@/constants/abi/StakingABI.json";
+import KataTokenABI from "@/constants/abi/KataTokenABI.json";
+import { AdminContext } from "@/contexts/adminContext";
+import { StakingContractData } from "@/services/StakingContractData";
 
 const StakeContainer = () => {
+	const validation = useContext(AdminContext);
+
+	useEffect(() => {
+		console.log("validation", validation);
+	}, [validation]);
+
 	const [selectedRate, setSelectedRate] = useState<number | null>(null);
 	const [stakeAmount, setStakeAmount] = useState<number | null>(null);
+	const [stakeDuration, setStakeDuration] = useState<number | null>(null);
 
 	const { address } = useAccount();
 
@@ -35,51 +45,30 @@ const StakeContainer = () => {
 
 	const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
 		console.log(event.target.value);
-		setSelectedRate(Number(event.target.value));
+		setSelectedRate(Number(event.target.value.split("/")[0]));
+		setStakeDuration(Number(event.target.value.split("/")[1]));
 	};
 	const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setStakeAmount(Number(event.target.value));
 	};
 
 	const { data: stakeDurations }: { data: Array<any> | undefined } =
-		useReadContract({
-			address: `0x${process.env.STAKING_ADDRESS}`,
-			abi: StakingABI,
-			functionName: "getRates",
-		});
+		useReadContract(StakingContractData("getRates"));
 
-	const { data: approveAmount }: { data: any } = useReadContract({
-		address: `0x${process.env.KATA_TOKEN_ADDRESS}`,
-		abi: KataTokenABI,
-		functionName: "allowance",
-		args: [address, `0x${process.env.STAKING_ADDRESS}`],
-	});
-
-	const { data: ktAddress }: { data: any } = useReadContract({
-		address: `0x${process.env.STAKING_ADDRESS}`,
-		abi: StakingABI,
-		functionName: "mainToken",
-	});
+	const { data: isStopped }: { data: boolean | undefined } = useReadContract(
+		StakingContractData("isStopped")
+	);
 
 	const stake = async () => {
 		if (!stakeAmount || selectedRate === null)
 			return console.log("stake failed", stakeAmount, selectedRate);
 		try {
-			console.log(
-				stakeAmount,
-				selectedRate,
-				`0x${process.env.STAKING_ADDRESS}`,
-				`0x${process.env.KATA_TOKEN_ADDRESS}`
-			);
-			await writeContract({
-				address: `0x${process.env.KATA_TOKEN_ADDRESS}`,
-				abi: KataTokenABI,
-				functionName: "approve",
-				args: [
+			await writeContract(
+				StakingContractData("approve", [
 					`0x${process.env.STAKING_ADDRESS}`,
 					BigInt(stakeAmount * Math.pow(10, 18)),
-				],
-			});
+				])
+			);
 		} catch (err) {
 			console.log(err);
 		}
@@ -92,13 +81,7 @@ const StakeContainer = () => {
 				selectedRate,
 				`0x${process.env.STAKING_ADDRESS}`
 			);
-			writeContract({
-				address: `0x${process.env.STAKING_ADDRESS}`,
-				abi: StakingABI,
-				functionName: "changeStakingStatus",
-				args: [false],
-			});
-			console.log("sss");
+			writeContract(StakingContractData("changeStakingStatus", [false]));
 		} catch (err) {
 			console.log(err);
 		}
@@ -114,26 +97,18 @@ const StakeContainer = () => {
 				logs[0]?.args?.owner === address ||
 				logs[0]?.args?.spender === `0x${process.env.STAKING_ADDRESS}`
 			)
-				writeContract({
-					address: `0x${process.env.STAKING_ADDRESS}`,
-					abi: StakingABI,
-					functionName: "stake",
-					args: [logs[0]?.args?.value, selectedRate],
-				});
+				writeContract(
+					StakingContractData("stake", [logs[0]?.args?.value, selectedRate])
+				);
 		},
 	});
-
-	useEffect(() => {
-		console.log("stakeDurations", stakeDurations);
-		if (stakeDurations) setSelectedRate(0);
-	}, [stakeDurations]);
 
 	return (
 		<Card flex="2">
 			<CardHeader>
 				<Text>Staking</Text>
 			</CardHeader>
-			<CardBody px="120px">
+			<CardBody px="120px" pt="50px">
 				<Flex
 					direction="column"
 					gap="20px"
@@ -149,21 +124,56 @@ const StakeContainer = () => {
 						<GridItem colSpan={1}>
 							<Text>Staking Duration: </Text>
 						</GridItem>
-						<GridItem colSpan={2}>
+						<GridItem colSpan={3}>
 							<Select onChange={handleSelectChange}>
+								<option value=""></option>
 								{stakeDurations && stakeDurations.length > 0 ? (
-									stakeDurations.map((item, index) => (
-										<option key={index} value={index}>
-											{`Rate: ${item.newInterestRate}%, Lock: ${
-												Number(item.timeStamp) / 2592000000
-											} month`}
-										</option>
-									))
+									stakeDurations
+										.filter((item) => item.active === true)
+										.map((item, index) => (
+											<option
+												key={index}
+												value={item.newInterestRate + "/" + item.lockDuration}>
+												{`Rate: ${item.newInterestRate}%, Lock: ${
+													Number(item.lockDuration) / 2592000
+												} month`}
+											</option>
+										))
 								) : (
 									<option disabled>No stake durations available</option>
 								)}
 							</Select>
 						</GridItem>
+						<GridItem colSpan={4} pt="20px"></GridItem>
+						<GridItem colSpan={1}></GridItem>
+						<GridItem colSpan={1} textAlign="center">
+							Stake / Reward:
+						</GridItem>
+						<GridItem colSpan={1} textAlign="center">
+							<Badge fontSize="0.8em" colorScheme="red">
+								{stakeAmount ? stakeAmount : "0"}
+							</Badge>
+							{" / "}
+							<Badge fontSize="0.8em" colorScheme="green">
+								{stakeAmount
+									? selectedRate
+										? (stakeAmount * (100 + selectedRate)) / 100
+										: "0"
+									: "0"}
+							</Badge>
+						</GridItem>
+						<GridItem colSpan={1}></GridItem>
+						<GridItem colSpan={1}></GridItem>
+						<GridItem colSpan={1} textAlign="center">
+							Stake Duration:
+						</GridItem>
+						<GridItem colSpan={1} textAlign="center">
+							{stakeDuration && !isNaN(stakeDuration)
+								? stakeDuration / 2592000
+								: 0}{" "}
+							months
+						</GridItem>
+						<GridItem colSpan={1}></GridItem>
 					</Grid>
 					<Flex></Flex>
 
@@ -171,22 +181,13 @@ const StakeContainer = () => {
 						w="fit-content"
 						px="20px"
 						colorScheme="orange"
-						onClick={() => stake()}>
+						onClick={() => stake()}
+						disabled={isStopped === true}>
 						Stake
 					</Button>
-					{/* {error && (
-						<div>
-							Error: {(error as BaseError).shortMessage || error.message}
-						</div>
-					)} */}
-
-					<Button
-						w="fit-content"
-						px="20px"
-						colorScheme="orange"
-						onClick={() => changeStaking()}>
-						stop staking
-					</Button>
+					{isStopped === true && (
+						<Text>Staking is temporarily stopped. Try it again later.</Text>
+					)}
 				</Flex>
 			</CardBody>
 		</Card>

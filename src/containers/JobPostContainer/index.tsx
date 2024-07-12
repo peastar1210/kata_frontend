@@ -17,7 +17,7 @@ import {
 } from "@chakra-ui/react";
 import { useAccount, useReadContract, useWriteContract } from "wagmi";
 
-import JobBoardABI from "@/constants/JobBoardABI.json";
+import JobBoardABI from "@/constants/abi/JobBoardABI.json";
 
 export const JobPostContainer = () => {
 	const [title, setTitle] = useState<String>("");
