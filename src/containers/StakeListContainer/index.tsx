@@ -6,7 +6,7 @@ import { useAccount, useReadContract, useWriteContract } from "wagmi";
 import StakingABI from "@/constants/abi/StakingABI.json";
 import KataTokenABI from "@/constants/abi/KataTokenABI.json";
 import { Key, useEffect } from "react";
-import { StakingContractData } from "@/services/StakingContractData";
+import { StakingContractData } from "@/services/ContractData";
 
 export const StakeListContainer = () => {
 	const { address } = useAccount();

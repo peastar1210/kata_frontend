@@ -26,7 +26,7 @@ import {
 import StakingABI from "@/constants/abi/StakingABI.json";
 import KataTokenABI from "@/constants/abi/KataTokenABI.json";
 import { AdminContext } from "@/contexts/adminContext";
-import { StakingContractData } from "@/services/StakingContractData";
+import { StakingContractData } from "@/services/ContractData";
 
 const StakeContainer = () => {
 	const validation = useContext(AdminContext);

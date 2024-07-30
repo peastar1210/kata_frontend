@@ -6,7 +6,7 @@ import { useAccount, useReadContract } from "wagmi";
 import { AdminBtn } from "@/components/buttons/AdminBtn";
 
 import StakingABI from "@/constants/abi/StakingABI.json";
-import { StakingContractData } from "@/services/StakingContractData";
+import { StakingContractData } from "@/services/ContractData";
 
 export const Header = () => {
 	const { address } = useAccount();

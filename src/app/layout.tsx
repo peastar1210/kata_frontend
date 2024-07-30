@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { headers } from "next/headers";
 import { cookieToInitialState } from "wagmi";
 
@@ -8,7 +9,6 @@ import { getConfig } from "@/wagmi";
 
 import "./globals.css";
 import "@rainbow-me/rainbowkit/styles.css";
-import { useEffect } from "react";
 
 function RootLayout({ children }: { children: React.ReactNode }) {
 	const initialState = cookieToInitialState(

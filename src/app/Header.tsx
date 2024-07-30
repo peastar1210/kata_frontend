@@ -14,13 +14,13 @@ export const Header = () => {
 		address: `0x${process.env.KATA_TOKEN_ADDRESS}`,
 		abi: erc20Abi,
 		functionName: "balanceOf",
-		args: ["0x2F42cB476F52650167812b11c2EA62B0a89bD26b"],
+		args: [address!],
 	});
 	const { data: jbtTokenBalance } = useReadContract({
 		address: `0x${process.env.JBT_TOKEN_ADDRESS}`,
 		abi: erc20Abi,
 		functionName: "balanceOf",
-		args: ["0x2F42cB476F52650167812b11c2EA62B0a89bD26b"],
+		args: [address!],
 	});
 
 	useEffect(() => {

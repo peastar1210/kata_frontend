@@ -154,7 +154,7 @@
 		],
 		"name": "changeStakingStatus",
 		"outputs": [],
-		"stateMutability": "payable",
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -314,7 +314,7 @@
 		],
 		"name": "removeRateAndLockduration",
 		"outputs": [],
-		"stateMutability": "payable",
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -352,7 +352,7 @@
 		],
 		"name": "setRateAndLockduration",
 		"outputs": [],
-		"stateMutability": "payable",
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{

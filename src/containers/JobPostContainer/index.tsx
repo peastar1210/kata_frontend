@@ -19,7 +19,7 @@ import { useAccount, useReadContract, useWriteContract } from "wagmi";
 
 import JobBoardABI from "@/constants/abi/JobBoardABI.json";
 
-export const JobPostContainer = () => {
+export const JobPostContainer = (props: any) => {
 	const [title, setTitle] = useState<String>("");
 	const [content, setContent] = useState<String>("");
 	const [reward, setReward] = useState<Number>(0);
@@ -98,6 +98,14 @@ export const JobPostContainer = () => {
 						backgroundColor="orange"
 						onClick={postJob}>
 						Post
+					</Button>
+
+					<Button
+						w="fit-content"
+						px="20px"
+						backgroundColor="orange"
+						onClick={() => props.setPostJob(false)}>
+						Cancel
 					</Button>
 				</Flex>
 			</CardBody>

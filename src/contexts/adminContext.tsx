@@ -3,7 +3,7 @@ import React, { ReactNode, createContext, useEffect, useState } from "react";
 import { useAccount, useReadContract } from "wagmi";
 
 import StakingABI from "@/constants/abi/StakingABI.json";
-import { StakingContractData } from "@/services/StakingContractData";
+import { StakingContractData } from "@/services/ContractData";
 
 interface AdminContextType {
 	validation: boolean;
